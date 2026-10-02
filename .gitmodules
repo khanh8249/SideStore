@@ -3,7 +3,7 @@
 [submodule "Dependencies/minimuxer"]
     path = Dependencies/minimuxer
     url = https://github.com/khanh8249/minimuxer
-    branch = develop
+    branch = fix/heartbeat-lifecycle
 [submodule "Dependencies/SideSign"]
 	path = Dependencies/SideSign
 	url = https://github.com/SideStore/SideSign
