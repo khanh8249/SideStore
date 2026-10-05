@@ -262,15 +262,32 @@ jobs:
       # --------------------------------------------------
       # --------------------------------------------------
       # upload release to GH
-      # --------------------------------------------------
+      # --------------------------------------------------# Disable gốc
       - name: Upload Release
-        if: |
-          steps.build_gate.outputs.should_skip != 'true' &&
-          github.repository == 'SideStore/SideStore'
+        if: false    # ← tắt
         run: |
           python3 scripts/ci/workflow.py upload-release \
-            "$RELEASE_NAME" \
-            "$CHANNEL" \
-            "$GITHUB_SHA" \
-            "$GITHUB_REPOSITORY" \
-            "$UPSTREAM_CHANNEL"
+            "$RELEASE_NAME" "$CHANNEL" "$GITHUB_SHA" \
+            "$GITHUB_REPOSITORY" "$UPSTREAM_CHANNEL"
+
+      # Thêm mới cho fork
+      - name: Upload Fork Release
+        if: |
+          steps.build_gate.outputs.should_skip != 'true' &&
+          github.repository == 'khanh8249/SideStore'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: nightly-fork
+          name: "Nightly (Fork)"
+          body: |
+            Fork build with minimuxer heartbeat fix for iOS 16.
+
+            Commit: ${{ env.SHORT_COMMIT }}
+            Version: ${{ env.MARKETING_VERSION }}
+          prerelease: true
+          files: |
+            SideStore.ipa
+            SideStore.dSYMs.zip
+          fail_on_unmatched_files: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
