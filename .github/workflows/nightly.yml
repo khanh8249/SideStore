@@ -14,6 +14,10 @@ on:
     - cron: "0 0 * * *"
   workflow_dispatch:
 
+permissions:
+  contents: write
+  actions: read
+
 concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
@@ -256,8 +260,13 @@ jobs:
       # --------------------------------------------------
       # upload release to GH
       # --------------------------------------------------
+      - # --------------------------------------------------
+      # upload release to GH
+      # --------------------------------------------------
       - name: Upload Release
-        if: steps.build_gate.outputs.should_skip != 'true'
+        if: |
+          steps.build_gate.outputs.should_skip != 'true' &&
+          github.repository == 'SideStore/SideStore'
         run: |
           python3 scripts/ci/workflow.py upload-release \
             "$RELEASE_NAME" \
