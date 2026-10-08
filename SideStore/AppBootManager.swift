@@ -136,10 +136,16 @@ public final class AppBootManager {
                 return
             }
 
-            do {
-                try await self.startMinimuxer(pairingFile: pf)
-            } catch {
-                debugLog("[AppBootManager] Failed to start minimuxer: \(error)")
+            let maxA = 15
+            for a in 1...maxA {
+                do {
+                    debugLog("[AppBootManager] Minimuxer start \(a)/\(maxA)")
+                    try await self.startMinimuxer(pairingFile: pf)
+                    if (await isMinimuxerReady()).isSuccess { return }
+                } catch {
+                    debugLog("[AppBootManager] Attempt \(a) failed: \(error)")
+                }
+                if a < maxA { try? await Task.sleep(nanoseconds: 1_000_000_000) }
             }
         }()
         
